@@ -1,5 +1,16 @@
 let section =document.getElementById("container");
 let whencl=document.getElementById("whencl");
+//for searchbar
+const searchInput = document.querySelector('.input');
+let arr=[];
+searchInput.addEventListener('input',(input)=>{
+    let value=input.target.value;
+    const filteredEle=arr.filter(ele => {
+        let isVisible=ele.name.includes(value);
+       return isVisible;
+    });
+    display(filteredEle);
+});
 function hoverfun(para){
     para.style.position="relative";
    para.style.animation="mynewmove .2s 2";
@@ -9,6 +20,7 @@ function closeOverlay(){
     whencl.style.opacity='0';
     whencl.innerHTML='';
 }
+//when clicking on any pokemon
 async function clickfun(url,imgn){
     let response= await fetch(url);
     let data= await response.json();
@@ -21,8 +33,6 @@ async function clickfun(url,imgn){
             type+=',';
          }
     }
-    console.log(type);
-    console.log(data);
     whencl.style.position="fixed";
     whencl.style.zIndex='2';
     whencl.style.width="100%";
@@ -43,14 +53,23 @@ async function clickfun(url,imgn){
 
 
 }
-async function get(){
+//fetch api
+async function getApi(){
     let response= await fetch("https://pokeapi.co/api/v2/pokemon/?offset=150&limit=150");
     let data= await response.json();
-    let arr=data.results;
+    arr=data.results;
+    for(let i=0;i<arr.length;i++){
+        arr[i].img=`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${i+1}.png`;
+    }
+    display(arr);
+}
+//for displaying  pokemons
+function display(arr){
+    section.innerHTML="";
     for(let i=0;i<arr.length;i++){
         let a=arr[i].url;
-        section.innerHTML+=`<div class="pokemon-sec" onclick="clickfun('${a}',${i+1})" onmouseover="hoverfun(this)"><img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${i+1}.png"/><h3>${i+1}-${arr[i].name}</h3></div>`;
+        section.innerHTML+=`<div class="pokemon-sec" onclick="clickfun('${a}',${i+1})" onmouseover="hoverfun(this)"><img src="${arr[i].img}"/><h3>${i+1}-${arr[i].name}</h3></div>`;
     }
 }
-get();
+getApi();
 
